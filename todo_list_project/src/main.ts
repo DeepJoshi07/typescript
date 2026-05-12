@@ -24,6 +24,7 @@ const initApp = (): void => {
     fullList.addItem(newItem)
 
     template.render(fullList)
+    input.value = " ";
   })
 
   const clearItems = document.getElementById("clearItemsButton") as HTMLButtonElement
