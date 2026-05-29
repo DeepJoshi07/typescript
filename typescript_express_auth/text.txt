@@ -1,0 +1,11 @@
+# npm init
+# npm i -D typescript @types/node
+# npx tsc --init
+# npm i -D nodemon ts-node
+# "build":"tsc",
+# "start": "node dist/index.js",
+# "dev":"nodemon src/index.ts"
+# npm i express cors dotenv 
+# npm i --save-dev @types/express
+# npm i --save-dev @types/cors
+# npm i mongoose
