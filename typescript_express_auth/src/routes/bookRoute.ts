@@ -1,11 +1,12 @@
-import {Router, type Request,type Response} from 'express'
-import { addBook, getBooks, updateBook } from '../controller/bookController';
+import {Router} from 'express'
+import { addBook, deleteBook, getBooks, updateBook } from '../controller/bookController';
 
 const bookRouter = Router();
 
 bookRouter.get("/get-books",getBooks);
 bookRouter.post("/add-book",addBook);
 bookRouter.post("/update-book/:id",updateBook);
+bookRouter.delete("/delete-book/:id",deleteBook);
 
 
 export default bookRouter;

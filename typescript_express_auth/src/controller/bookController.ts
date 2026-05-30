@@ -71,7 +71,30 @@ export const updateBook = async (req: Request, res: Response) => {
 
     return res
       .status(201)
-      .json({ message: "Your book has been added", data: book } as IResponse);
+      .json({ message: "Your book has been updated", data: book } as IResponse);
+  } catch (error: any) {
+    console.log("Internal server error", error.message);
+    return res.status(500).json({
+      message: "Internal server Error!",
+    } as IResponse);
+  }
+};
+
+export const deleteBook = async (req: Request, res: Response) => {
+  const {id} = req.params;
+
+  try {
+    const book = await Book.findByIdAndDelete(id)
+
+    if (!book) {
+      return res.status(404).json({
+        message: "No book found!",
+      } as IResponse);
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Your book has been deleted", data: book } as IResponse);
   } catch (error: any) {
     console.log("Internal server error", error.message);
     return res.status(500).json({

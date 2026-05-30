@@ -9,3 +9,5 @@
 # npm i --save-dev @types/express
 # npm i --save-dev @types/cors
 # npm i mongoose
+# const hashPassword = await bcrypt.hash(password,10);
+# const isPassword = await bcrypt.compare(password,user.password);
