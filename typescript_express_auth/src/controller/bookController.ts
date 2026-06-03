@@ -17,7 +17,7 @@ export const getBooks = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      message: "no books found",
+      message: "Here are your books",
       data: books,
     } as IResponse);
     
@@ -30,6 +30,11 @@ export const getBooks = async (req: Request, res: Response) => {
 };
 
 export const addBook = async (req: Request, res: Response) => {
+  if(req.role !== "creator"){
+    return res.status(400).json({
+      message:"you are not eligible!"
+    } as IResponse)
+  }
   const { name, author, publishYear, description } = req.body;
 
   try {

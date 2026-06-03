@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { User } from "../models/user";
 import { IUser } from "../models/user";
-import bcrypt from "bcrypt"
-import jwt from 'jsonwebtoken'
+import bcrypt from "bcrypt";
+import jwt, { Secret } from "jsonwebtoken";
 
 interface IResponse {
   data?: any;
@@ -25,7 +25,7 @@ export const signup = async (req: Request, res: Response) => {
         .json({ message: "user already exists!" } as IResponse);
     }
 
-    const hashPassword = await bcrypt.hash(password,10);
+    const hashPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       name,
@@ -54,14 +54,13 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password} = req.body;
+  const { email, password } = req.body;
   try {
     if (!email || !password) {
       return res.status(400).json({
         message: "please provide all the feilds",
       } as IResponse);
     }
-
 
     const user: IUser | null = await User.findOne({ email });
 
@@ -71,14 +70,19 @@ export const login = async (req: Request, res: Response) => {
         .json({ message: "user does exists!" } as IResponse);
     }
 
-    
-    const isPassword = await bcrypt.compare(password,user.password);
+    const isPassword = await bcrypt.compare(password, user.password);
 
-    if(!isPassword){
-        return res.status(400).json({message:"Wrong password"} as IResponse)
+    if (!isPassword) {
+      return res.status(400).json({ message: "Wrong password" } as IResponse);
     }
 
-    const token = jwt.sign({id:user._id},process.env.)
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET as Secret,
+      {
+        expiresIn: "1hr",
+      },
+    );
 
     return res.status(200).json({
       message: "User logged in",
@@ -88,6 +92,7 @@ export const login = async (req: Request, res: Response) => {
         role: user.role,
         name: user.name,
       },
+      token,
     } as IResponse);
   } catch (error: any) {
     console.log("Internal server error", error.message);
@@ -97,18 +102,12 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-// export const signup = async(req:Request,res:Response) => {
-//     try {
-
-//     } catch (error) {
-
-//     }
-// }
-
-// export const signup = async(req:Request,res:Response) => {
-//     try {
-
-//     } catch (error) {
-
-//     }
-// }
+export const logout = async (req: Request, res: Response) => {
+  try {
+  } catch (error: any) {
+    console.log("Internal server error", error.message);
+    return res.status(500).json({
+      message: "Internal server Error!",
+    } as IResponse);
+  }
+};
