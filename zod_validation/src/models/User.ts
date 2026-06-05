@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const BasicUserSchema = z.object({
-  id:z.number(),
+  id: z.number(),
   name: z
     .string()
     .trim()
@@ -11,7 +11,8 @@ export const BasicUserSchema = z.object({
     .trim()
     .toLowerCase()
     .min(4, { message: "Username must be 4 or more characters long" }),
-  email: z.string().email().trim().toLowerCase(),
+  // email: z.string().trim().toLowerCase().pipe(z.email()),
+  email: z.string().trim().toLowerCase().pipe(z.email()),
   phone: z
     .string()
     .min(10, { message: "Phone numbers are a minimum of 10 digits" }),
@@ -20,19 +21,52 @@ export const BasicUserSchema = z.object({
   // .transform(val => `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`),
   //website: z.string().trim().toLowerCase().url().optional(),
   website: z.string().trim(),
-  address:z.object({
-    street:z.string().trim(),
-    suite:z.string().trim(),
-    city:z.string().trim(),
-    zipcode:z.string().trim(),
-    geo:z.object({
-      lat:z.string().trim(),
-      lng:z.string().trim()
-    })
+  company: z.object({
+    name: z.string().trim(),
+    catchPhrase: z.string().trim(),
+    bs: z.string().trim(),
   }),
-  company:z.object({
-    name:z.string().trim(),
-    catchPhrase:z.string().trim(),
-    bs:z.string().trim()
-  })
 });
+
+const UserAddressSchema = z.object({
+  street: z
+    .string()
+    .trim()
+    .min(5, { message: "Street must be 5 or more characters long" }),
+  suite: z.string().trim().optional(),
+  city: z
+    .string()
+    .trim()
+    .min(2, { message: "City must be 2 or more characters long" }),
+  zipcode: z.string(),//.regex(/^\d{5}(?:[-\s]\d{4}?)$/, {
+  //  message: "Must be 5 digit zip. Optional 4 digit extension allowed.",
+  // }),
+});
+
+const UserAddressSchemaWithGeo = UserAddressSchema.extend({
+  geo: z.object({
+    lat: z.string().trim(),
+    lng: z.string().trim(),
+  }),
+});
+
+// const HasIDSchema = z.object({ id: z.number().int().positive() });
+
+// export const UserSchemaWithAddress = BasicUserSchema.extend({address:UserAddressSchema}).and(HasIDSchema)
+
+
+export const UserSchemaWithAddress = BasicUserSchema
+  .omit({ id: true }) // remove old id
+  .extend({ id: z.number().int().positive(), address: UserAddressSchema });
+
+
+// export const UserSchemaWithGeo = BasicUserSchema.extend({address:UserAddressSchemaWithGeo}).and(HasIDSchema)
+
+
+export const UserSchemaWithGeo = BasicUserSchema
+  .omit({ id: true }) // remove old id
+  .extend({ id: z.number().int().positive(), address: UserAddressSchemaWithGeo });
+
+export type UserWithAddress = z.infer<typeof UserSchemaWithAddress>;
+
+export type UserWithGeo = z.infer<typeof UserSchemaWithGeo>;
